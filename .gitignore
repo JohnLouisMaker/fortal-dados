@@ -1,0 +1,95 @@
+# =============================================
+# Python
+# =============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# =============================================
+# Ambientes virtuais
+# =============================================
+venv/
+env/
+ENV/
+.venv/
+. env/
+
+# =============================================
+# Variáveis de ambiente e segredos
+# =============================================
+.env
+.env.*
+!.env.example
+
+# =============================================
+# Dados gerados pela raspagem
+# =============================================
+*.csv
+*.json
+*.xlsx
+*.xls
+data/
+output/
+outputs/
+scraped_data/
+results/
+logs/
+
+# =============================================
+# Arquivos de log
+# =============================================
+*.log
+log/
+logs/
+
+# =============================================
+# IDEs e editores
+# =============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# =============================================
+# Selenium / WebDriver
+# =============================================
+chromedriver
+chromedriver.exe
+geckodriver
+geckodriver.exe
+msedgedriver
+msedgedriver.exe
+webdriver/
+
+# =============================================
+# Outros comuns em scraping
+# =============================================
+*.sqlite3
+*.db
+temp/
+temporary/
+cache/
+*.pkl
+*.pickle
