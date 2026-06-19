@@ -1,6 +1,6 @@
 import pandas as pd
 
-primeira_vez = True
+ja_lido = True
 
 for df in pd.read_csv(
     "validation.csv", parse_dates=["date_time"], sep=",", chunksize=10000
@@ -8,9 +8,9 @@ for df in pd.read_csv(
     df["hora"] = df["date_time"].dt.hour
     resumo = df.groupby(["busline_id", "hora"]).size().reset_index(name="validacoes")
 
-    if primeira_vez:
+    if ja_lido:
         resumo.to_csv("validacao_agrupada.csv", mode="w", index=False)
-        primeira_vez = False
+        ja_lido = False
     else:
         resumo.to_csv("validacao_agrupada.csv", mode="a", header=False, index=False)
 
