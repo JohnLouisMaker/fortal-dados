@@ -51,7 +51,19 @@ export default function Map() {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {bairros && <GeoJSON data={bairros} />}
+        {bairros && (
+          <GeoJSON
+            data={bairros}
+            pointToLayer={() => null}
+            style={{
+              color: "#2563eb",
+              weight: 0.9,
+              opacity: 0.6,
+              fillColor: "#3b82f6",
+              fillOpacity: 0.3,
+            }}
+          />
+        )}
       </MapContainer>
     </>
   );
