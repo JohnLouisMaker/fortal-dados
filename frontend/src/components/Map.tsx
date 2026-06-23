@@ -1,9 +1,18 @@
 import { useEffect, useState } from "react";
-import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
+import { CircleMarker, GeoJSON, MapContainer, TileLayer } from "react-leaflet";
+
+import Papa from "papaparse";
+
+type BusStop = {
+  busstop_id: string;
+  lat: number;
+  lng: number;
+};
 
 export default function Map() {
   const [bairros, setBairros] = useState(null);
   const [loadMap, setLoadMap] = useState(true);
+  const [busStops, setBusStops] = useState<BusStop[]>([]);
 
   useEffect(() => {
     const carregarMapaFortaleza = async () => {
@@ -23,6 +32,25 @@ export default function Map() {
     };
 
     carregarMapaFortaleza();
+
+    const carregarDadosFortaleza = async () => {
+      try {
+        const res = await fetch("/data/bus_stops.csv");
+        if (!res.ok) throw new Error("Erro ao carregar os Dados");
+
+        const dataMap = await res.text();
+
+        const result = Papa.parse<BusStop>(dataMap, {
+          header: true,
+          dynamicTyping: true,
+          skipEmptyLines: true,
+        });
+        setBusStops(result.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    carregarDadosFortaleza();
   }, []);
 
   if (loadMap) {
@@ -64,6 +92,14 @@ export default function Map() {
             }}
           />
         )}
+        {busStops.map((bus_stops) => (
+          <CircleMarker
+            key={bus_stops.busstop_id}
+            center={[bus_stops.lat, bus_stops.lng]}
+            radius={4}
+            pathOptions={{ color: "#16a34a", fillColor: "#22c55e" }}
+          />
+        ))}
       </MapContainer>
     </>
   );
