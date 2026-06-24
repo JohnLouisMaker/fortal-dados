@@ -7,40 +7,47 @@ type HeatPoint = [number, number, number];
 
 type Props = {
   points: HeatPoint[];
+  radius?: number;
+  blur?: number;
+  maxZoom?: number;
+  max?: number;
+  minOpacity?: number;
+  gradient?: Record<number, string>;
 };
 
-declare module "leaflet" {
-  function heatLayer(
-    latlngs: HeatPoint[],
-    options?: {
-      radius?: number;
-      blur?: number;
-      maxZoom?: number;
-      max?: number;
-      gradient?: Record<number, string>;
-    },
-  ): L.Layer;
-}
-
-export default function HeatmapLayer({ points }: Props) {
+export default function HeatmapLayer({
+  points,
+  radius = 15,
+  blur = 12,
+  maxZoom = 16,
+  max = 100,
+  minOpacity = 0.35,
+  gradient = {
+    0.4: "#3b82f6", 
+    0.65: "#f59e0b", 
+    1.0: "#ef4444",
+  },
+}: Props) {
   const map = useMap();
 
   useEffect(() => {
-    if (!points.length) return;
+    if (!points || points.length === 0) return;
 
-    const heat = L.heatLayer(points, {
-      radius: 11, 
-      blur: 10,
-      maxZoom: 14,
-      max: 50, 
-      gradient: { 0.4: "#3b82f6", 0.65: "#f59e0b", 1.0: "#ef4444" },
-    });
-
-    heat.addTo(map);
+    const heatLayer = L.heatLayer(points, {
+      radius,
+      blur,
+      maxZoom,
+      max,
+      minOpacity,
+      gradient,
+    }).addTo(map);
+    
     return () => {
-      map.removeLayer(heat);
+      if (heatLayer && map) {
+        map.removeLayer(heatLayer);
+      }
     };
-  }, [map, points]);
+  }, [map, points, radius, blur, maxZoom, max, minOpacity, gradient]);
 
   return null;
 }

@@ -1,6 +1,6 @@
+import Papa from "papaparse";
 import { useEffect, useState } from "react";
 import { CircleMarker, GeoJSON, MapContainer, TileLayer } from "react-leaflet";
-import Papa from "papaparse";
 import HeatmapLayer from "./HeatMapLayer";
 
 type BusStop = {
@@ -100,8 +100,8 @@ export default function Map() {
       scrollWheelZoom={true}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        url={`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=A4RnZpNbXphy140t42fJ`}
+        attribution=' <a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
       />
 
       {bairros && (
