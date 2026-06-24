@@ -1,31 +1,84 @@
 import Papa from "papaparse";
 import { useEffect, useState } from "react";
-import { CircleMarker, GeoJSON, MapContainer, TileLayer } from "react-leaflet";
+import {
+  CircleMarker,
+  GeoJSON,
+  MapContainer,
+  TileLayer,
+  useMap,
+} from "react-leaflet";
+import type { HeatPoint } from "./HeatMapLayer";
 import HeatmapLayer from "./HeatMapLayer";
 
-type BusStop = {
-  busstop_id: string;
-  lat: number;
-  lng: number;
+type BusStop = { busstop_id: string; lat: number; lng: number };
+type HeatRow = { lat: number; lng: number; quantidade_lentidao: number };
+
+const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY;
+
+const FORTALEZA_BOUNDS = {
+  latMin: -3.8886,
+  latMax: -3.6912,
+  lngMin: -38.6362,
+  lngMax: -38.4015,
 };
 
-type HeatPoint = [number, number, number];
+function dentroDeFortaleza(lat: number, lng: number): boolean {
+  return (
+    lat >= FORTALEZA_BOUNDS.latMin &&
+    lat <= FORTALEZA_BOUNDS.latMax &&
+    lng >= FORTALEZA_BOUNDS.lngMin &&
+    lng <= FORTALEZA_BOUNDS.lngMax
+  );
+}
+
+// Paradas só aparecem com zoom >= 14
+function ParadasLayer({ paradas }: { paradas: BusStop[] }) {
+  const map = useMap();
+  const [visible, setVisible] = useState(map.getZoom() >= 14);
+
+  useEffect(() => {
+    const onZoom = () => setVisible(map.getZoom() >= 14);
+    map.on("zoomend", onZoom);
+    return () => {
+      map.off("zoomend", onZoom);
+    };
+  }, [map]);
+
+  if (!visible) return null;
+
+  return (
+    <>
+      {paradas.map((p) => (
+        <CircleMarker
+          key={p.busstop_id}
+          center={[p.lat, p.lng]}
+          radius={3}
+          pathOptions={{
+            color: "#ffffff",
+            fillColor: "#f59e0b",
+            fillOpacity: 0.9,
+            weight: 1,
+          }}
+        />
+      ))}
+    </>
+  );
+}
 
 export default function Map() {
   const [bairros, setBairros] = useState(null);
   const [loadMap, setLoadMap] = useState(true);
-  const [busStops, setBusStops] = useState<BusStop[]>([]);
+  const [paradas, setParadas] = useState<BusStop[]>([]);
   const [heatPoints, setHeatPoints] = useState<HeatPoint[]>([]);
 
   useEffect(() => {
     const carregarBairros = async () => {
       try {
-        const response = await fetch("/data/fullmapfortaleza.geojson");
-        if (!response.ok) throw new Error("Erro ao carregar bairros");
-        const data = await response.json();
-        setBairros(data);
-      } catch (error) {
-        console.error(error);
+        const res = await fetch("/data/fullmapfortaleza.geojson");
+        if (!res.ok) throw new Error("Erro ao carregar bairros");
+        setBairros(await res.json());
+      } catch (e) {
+        console.error(e);
       } finally {
         setLoadMap(false);
       }
@@ -35,16 +88,14 @@ export default function Map() {
       try {
         const res = await fetch("/data/bus_stops.csv");
         if (!res.ok) throw new Error("Erro ao carregar paradas");
-        const text = await res.text();
-        const result = Papa.parse<BusStop>(text, {
+        const { data } = Papa.parse<BusStop>(await res.text(), {
           header: true,
           dynamicTyping: true,
           skipEmptyLines: true,
         });
-        console.log("Amostra do CSV do Heatmap:", result.data[0]);
-        setBusStops(result.data);
-      } catch (error) {
-        console.error(error);
+        setParadas(data.filter((p) => dentroDeFortaleza(p.lat, p.lng)));
+      } catch (e) {
+        console.error(e);
       }
     };
 
@@ -52,25 +103,17 @@ export default function Map() {
       try {
         const res = await fetch("/data/result_heatmap.csv");
         if (!res.ok) throw new Error("Erro ao carregar heatmap");
-        const text = await res.text();
-        const result = Papa.parse<{
-          lat: number;
-          lng: number;
-          quantidade_lentidao: number;
-        }>(text, {
+        const { data } = Papa.parse<HeatRow>(await res.text(), {
           header: true,
           dynamicTyping: true,
           skipEmptyLines: true,
         });
-        console.log("Amostra do CSV do Heatmap:", result.data[0]);
-        const points: HeatPoint[] = result.data.map((row) => [
-          row.lat,
-          row.lng,
-          row.quantidade_lentidao,
-        ]);
+        const points: HeatPoint[] = data
+          .filter((r) => dentroDeFortaleza(r.lat, r.lng))
+          .map((r) => [r.lat, r.lng, r.quantidade_lentidao]);
         setHeatPoints(points);
-      } catch (error) {
-        console.error(error);
+      } catch (e) {
+        console.error(e);
       }
     };
 
@@ -81,12 +124,12 @@ export default function Map() {
 
   if (loadMap) {
     return (
-      <div className="flex h-screen w-screen flex-col items-center justify-center bg-slate-50">
-        <div className="flex flex-col items-center space-y-4 animate-pulse">
-          <div className="h-12 w-12 rounded-full border-4 border-blue-500 border-t-transparent animate-spin"></div>
-          <h1 className="text-xl font-semibold text-slate-700">
-            Carregando Mapa
-          </h1>
+      <div className="flex h-screen w-screen flex-col items-center justify-center bg-slate-900">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-12 w-12 rounded-full border-4 border-amber-400 border-t-transparent animate-spin" />
+          <p className="text-amber-400 font-semibold tracking-wide">
+            Carregando mapa
+          </p>
         </div>
       </div>
     );
@@ -100,8 +143,8 @@ export default function Map() {
       scrollWheelZoom={true}
     >
       <TileLayer
-        url={`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=A4RnZpNbXphy140t42fJ`}
-        attribution=' <a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+        url={`https://api.maptiler.com/maps/dataviz/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`}
+        attribution='&copy; <a href="https://www.maptiler.com">MapTiler</a> &copy; OpenStreetMap contributors'
       />
 
       {bairros && (
@@ -109,25 +152,24 @@ export default function Map() {
           data={bairros}
           pointToLayer={() => null}
           style={{
-            color: "#2563eb",
-            weight: 0.9,
-            opacity: 0.6,
-            fillColor: "#3b82f6",
-            fillOpacity: 0.3,
+            color: "#ffffff",
+            weight: 1,
+            opacity: 0.4,
+            fillOpacity: 0,
           }}
         />
       )}
 
-      {busStops.map((stop) => (
-        <CircleMarker
-          key={stop.busstop_id}
-          center={[stop.lat, stop.lng]}
-          radius={4}
-          pathOptions={{ color: "#16a34a", fillColor: "#22c55e" }}
-        />
-      ))}
+      <HeatmapLayer
+        points={heatPoints}
+        radius={14}
+        blur={18}
+        max={1500}
+        minOpacity={0.15}
+        gradient={{ 0.3: "#25c450", 0.65: "#f59e0b", 1.0: "#ef4444" }}
+      />
 
-      <HeatmapLayer points={heatPoints} />
+      <ParadasLayer paradas={paradas} />
     </MapContainer>
   );
 }
