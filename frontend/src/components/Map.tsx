@@ -7,6 +7,7 @@ import {
   TileLayer,
   useMap,
 } from "react-leaflet";
+import { motion, AnimatePresence } from "framer-motion";
 import type { HeatPoint } from "./HeatMapLayer";
 import HeatmapLayer from "./HeatMapLayer";
 import PainelFiltros from "./painelFiltro";
@@ -133,62 +134,78 @@ export default function Map() {
     carregarHeatmap();
   }, []);
 
-  if (loadMap) {
-    return (
-      <div className="flex h-screen w-screen flex-col items-center justify-center bg-slate-900">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="h-12 w-12 rounded-full border-4 border-amber-400 border-t-transparent animate-spin" />
-          <p className="text-amber-400 font-semibold tracking-wide">
-            Carregando mapa
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <MapContainer
-      center={[-3.7734, -38.5267]}
-      style={{ height: "100%", width: "100%" }}
-      zoom={12}
-      scrollWheelZoom={true}
-    >
-      <TileLayer
-        url={`https://api.maptiler.com/maps/dataviz/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`}
-        attribution='&copy; <a href="https://www.maptiler.com">MapTiler</a> &copy; OpenStreetMap contributors'
-      />
+    <div className="relative h-screen w-screen">
+      <AnimatePresence mode="wait">
+        {loadMap ? (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900"
+          >
+            <div className="flex flex-col items-center space-y-4">
+              <div className="h-12 w-12 rounded-full border-4 border-amber-400 border-t-transparent animate-spin" />
+              <p className="text-amber-400 font-semibold tracking-wide">
+                Carregando mapa
+              </p>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="map"
+            initial={{ opacity: 0, scale: 1.02 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute inset-0"
+          >
+            <MapContainer
+              center={[-3.7734, -38.5267]}
+              style={{ height: "100%", width: "100%" }}
+              zoom={12}
+              scrollWheelZoom={true}
+            >
+              <TileLayer
+                url={`https://api.maptiler.com/maps/dataviz/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`}
+                attribution='&copy; <a href="https://www.maptiler.com">MapTiler</a> &copy; OpenStreetMap contributors'
+              />
 
-      {bairros && (
-        <GeoJSON
-          data={bairros}
-          pointToLayer={() => null}
-          style={{
-            color: "#ffffff",
-            weight: 1,
-            opacity: 0.4,
-            fillOpacity: 0,
-          }}
-        />
-      )}
+              {bairros && (
+                <GeoJSON
+                  data={bairros}
+                  pointToLayer={() => null}
+                  style={{
+                    color: "#ffffff",
+                    weight: 1,
+                    opacity: 0.4,
+                    fillOpacity: 0,
+                  }}
+                />
+              )}
 
-      {camadas.heatmap && (
-        <HeatmapLayer
-          points={heatPoints}
-          radius={14}
-          blur={18}
-          max={1500}
-          minOpacity={0.15}
-          gradient={{ 0.3: "#25c450", 0.65: "#f59e0b", 1.0: "#ef4444" }}
-        />
-      )}
+              {camadas.heatmap && (
+                <HeatmapLayer
+                  points={heatPoints}
+                  radius={14}
+                  blur={18}
+                  max={1500}
+                  minOpacity={0.15}
+                  gradient={{ 0.3: "#25c450", 0.65: "#f59e0b", 1.0: "#ef4444" }}
+                />
+              )}
 
-      {camadas.paradas && <ParadasLayer paradas={paradas} />}
+              {camadas.paradas && <ParadasLayer paradas={paradas} />}
 
-      <PainelFiltros
-        camadas={camadas}
-        onToggle={toggleCamada}
-        bairros={bairros}
-      />
-    </MapContainer>
+              <PainelFiltros
+                camadas={camadas}
+                onToggle={toggleCamada}
+                bairros={bairros}
+              />
+            </MapContainer>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
