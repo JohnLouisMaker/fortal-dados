@@ -9,9 +9,11 @@ import {
 } from "react-leaflet";
 import type { HeatPoint } from "./HeatMapLayer";
 import HeatmapLayer from "./HeatMapLayer";
+import PainelFiltros from "./painelFiltro";
 
 type BusStop = { busstop_id: string; lat: number; lng: number };
 type HeatRow = { lat: number; lng: number; quantidade_lentidao: number };
+type Camadas = { bairros: boolean; paradas: boolean; heatmap: boolean };
 
 const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY;
 
@@ -31,7 +33,6 @@ function dentroDeFortaleza(lat: number, lng: number): boolean {
   );
 }
 
-// Paradas só aparecem com zoom >= 14
 function ParadasLayer({ paradas }: { paradas: BusStop[] }) {
   const map = useMap();
   const [visible, setVisible] = useState(map.getZoom() >= 14);
@@ -57,7 +58,7 @@ function ParadasLayer({ paradas }: { paradas: BusStop[] }) {
             color: "#ffffff",
             fillColor: "#f59e0b",
             fillOpacity: 0.9,
-            weight: 1,
+            weight: 2,
           }}
         />
       ))}
@@ -66,10 +67,20 @@ function ParadasLayer({ paradas }: { paradas: BusStop[] }) {
 }
 
 export default function Map() {
-  const [bairros, setBairros] = useState(null);
+  const [bairros, setBairros] = useState<GeoJSON.FeatureCollection | null>(
+    null,
+  );
   const [loadMap, setLoadMap] = useState(true);
   const [paradas, setParadas] = useState<BusStop[]>([]);
   const [heatPoints, setHeatPoints] = useState<HeatPoint[]>([]);
+  const [camadas, setCamadas] = useState<Camadas>({
+    bairros: true,
+    paradas: true,
+    heatmap: true,
+  });
+
+  const toggleCamada = (c: keyof Camadas) =>
+    setCamadas((prev) => ({ ...prev, [c]: !prev[c] }));
 
   useEffect(() => {
     const carregarBairros = async () => {
@@ -160,16 +171,24 @@ export default function Map() {
         />
       )}
 
-      <HeatmapLayer
-        points={heatPoints}
-        radius={14}
-        blur={18}
-        max={1500}
-        minOpacity={0.15}
-        gradient={{ 0.3: "#25c450", 0.65: "#f59e0b", 1.0: "#ef4444" }}
-      />
+      {camadas.heatmap && (
+        <HeatmapLayer
+          points={heatPoints}
+          radius={14}
+          blur={18}
+          max={1500}
+          minOpacity={0.15}
+          gradient={{ 0.3: "#25c450", 0.65: "#f59e0b", 1.0: "#ef4444" }}
+        />
+      )}
 
-      <ParadasLayer paradas={paradas} />
+      {camadas.paradas && <ParadasLayer paradas={paradas} />}
+
+      <PainelFiltros
+        camadas={camadas}
+        onToggle={toggleCamada}
+        bairros={bairros}
+      />
     </MapContainer>
   );
 }
