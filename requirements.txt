@@ -1,8 +1,19 @@
 fastapi>=0.111.0
 uvicorn[standard]>=0.29.0
-pandas>=2.2.0
-geopandas>=0.14.0
-shapely>=2.0.0
 pydantic-settings>=2.0.0
 python-dotenv>=1.0.0
 orjson
+
+# Manipulação de Dados e Performance
+pandas>=2.2.0
+scipy==1.17.0
+
+# Análise Geoespacial (Essencial para rotas/bairros/paradas)
+geopandas>=0.14.0
+shapely>=2.0.0
+python-multipart==0.0.22
+pytz==2025.2
+PyYAML==6.0.3
+reportlab==4.4.10
+requests==2.32.5
+rsa==4.9.1
