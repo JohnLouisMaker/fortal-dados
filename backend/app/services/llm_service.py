@@ -19,7 +19,6 @@ def enviar_para_llm(request: str, neighborhood: str = None) -> str:
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": request},
-            {},
         ],
     )
 
