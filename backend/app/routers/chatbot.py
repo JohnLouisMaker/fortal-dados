@@ -3,10 +3,10 @@ from app.services.bairro_service import buscar_bairro
 from app.services.llm_service import enviar_para_llm
 from fastapi import APIRouter, HTTPException
 
-chatbot_router = APIRouter(prefix="/chat", tags=["chatbot"])
+router = APIRouter(prefix="/chat", tags=["chatbot"])
 
 
-@chatbot_router.post("")
+@router.post("")
 async def chat(request: Chat):
     if not request.message:
         raise HTTPException(status_code=400, detail="message is required")
