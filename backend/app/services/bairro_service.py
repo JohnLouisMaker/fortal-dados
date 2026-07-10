@@ -128,7 +128,7 @@ BAIRROS_OFICIAIS = [
 def buscar_bairro(request: str) -> str | None:
     if not request:
         return None
-    result = process.extractOne(request, BAIRROS_OFICIAIS, scorer=fuzz.Wratio)
+    result = process.extractOne(request, BAIRROS_OFICIAIS, scorer=fuzz.WRatio)
 
     if result:
         bairro, score, index = result

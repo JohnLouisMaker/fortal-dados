@@ -15,7 +15,7 @@ def enviar_para_llm(request: str, neighborhood: str = None) -> str:
         system_prompt += f" O usuário está perguntando especificamente sobre o bairro: {neighborhood}. Use essa informação de forma natural."
 
     response = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model="llama-3.1-8b-instant",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": request},

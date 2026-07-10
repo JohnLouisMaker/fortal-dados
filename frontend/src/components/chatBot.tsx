@@ -54,7 +54,7 @@ export default function ChatBot({ onBairroDetected }: ChatBotProps) {
       });
 
       if (!res.ok) throw new Error(`Erro ${res.status}`);
-
+      
       const data: { response: string; bairro_detectado: string | null } =
         await res.json();
 
