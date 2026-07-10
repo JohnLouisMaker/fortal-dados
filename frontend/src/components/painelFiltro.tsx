@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import L from "leaflet";
 import { useEffect, useRef, useState } from "react";
 import { useMap } from "react-leaflet";
+
 type Camadas = {
   bairros: boolean;
   paradas: boolean;
@@ -12,9 +13,15 @@ type Props = {
   camadas: Camadas;
   onToggle: (camada: keyof Camadas) => void;
   bairros: GeoJSON.FeatureCollection | null;
+  bairroSelecionado: string | null;
+  onSelecionarBairro: (nome: string) => void;
 };
 
-function BairroDestaque({ feature }: { feature: GeoJSON.Feature | null }) {
+export function BairroDestaque({
+  feature,
+}: {
+  feature: GeoJSON.Feature | null;
+}) {
   const map = useMap();
   const layerRef = useRef<L.GeoJSON | null>(null);
 
@@ -156,11 +163,14 @@ function BairroDropdown({
   );
 }
 
-export default function PainelFiltros({ camadas, onToggle, bairros }: Props) {
+export default function PainelFiltros({
+  camadas,
+  onToggle,
+  bairros,
+  bairroSelecionado,
+  onSelecionarBairro,
+}: Props) {
   const [open, setOpen] = useState(false);
-  const [featureSelecionada, setFeatureSelecionada] =
-    useState<GeoJSON.Feature | null>(null);
-
   const painelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -175,103 +185,86 @@ export default function PainelFiltros({ camadas, onToggle, bairros }: Props) {
       .filter(Boolean)
       .sort() ?? [];
 
-  const handleBairro = (nome: string) => {
-    if (!nome) {
-      setFeatureSelecionada(null);
-      return;
-    }
-    const feature =
-      bairros?.features.find((f) => f.properties?.name === nome) ?? null;
-    setFeatureSelecionada(feature);
-  };
-
   return (
-    <>
-      <div className="absolute top-4 right-4 z-1000 flex flex-col items-end">
-        <motion.button
-          onClick={() => setOpen(!open)}
-          layout
+    <div className="absolute top-4 right-4 z-1000 flex flex-col items-end">
+      <motion.button
+        onClick={() => setOpen(!open)}
+        layout
+        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+        className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 rounded-2xl shadow-lg active:scale-95"
+      >
+        <motion.span
+          className="text-lg inline-block"
+          animate={{ rotate: open ? 90 : 0 }}
           transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-          className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 rounded-2xl shadow-lg active:scale-95"
         >
-          <motion.span
-            className="text-lg inline-block"
-            animate={{ rotate: open ? 90 : 0 }}
-            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+          {open ? "✕" : "☰"}
+        </motion.span>
+        <span>Filtros</span>
+      </motion.button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            ref={painelRef}
+            initial={{ opacity: 0, scale: 0.96, y: -12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: -12 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            style={{ transformOrigin: "top right" }}
+            className="mt-3 w-72 rounded-2xl bg-white/95 backdrop-blur-xl shadow-2xl border border-amber-200"
           >
-            {open ? "✕" : "☰"}
-          </motion.span>
-          <span>Filtros</span>
-        </motion.button>
-
-        <AnimatePresence>
-          {open && (
             <motion.div
-              ref={painelRef}
-              initial={{ opacity: 0, scale: 0.96, y: -12 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: -12 }}
-              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-              style={{ transformOrigin: "top right" }}
-              className="mt-3 w-72 rounded-2xl bg-white/95 backdrop-blur-xl shadow-2xl border border-amber-200"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.08, duration: 0.2 }}
+              className="px-4 py-3 bg-linear-to-r from-amber-50 to-orange-50 border-b border-amber-100 rounded-t-2xl"
             >
-              <motion.div
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.08, duration: 0.2 }}
-                className="px-4 py-3 bg-linear-to-r from-amber-50 to-orange-50 border-b border-amber-100 rounded-t-2xl"
-              >
-                <p className="font-semibold text-slate-700">Filtros</p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.12, duration: 0.22 }}
-                className="p-5 space-y-6"
-              >
-                <div className="space-y-3">
-                  <p className="text-xs font-bold text-amber-700 uppercase tracking-widest">
-                    Camadas
-                  </p>
-                  {(["paradas", "heatmap"] as const).map((c) => (
-                    <label
-                      key={c}
-                      className="flex items-center gap-3 cursor-pointer select-none"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={camadas[c]}
-                        onChange={() => onToggle(c)}
-                        className="w-4 h-4 accent-amber-500"
-                      />
-                      <span className="text-sm text-slate-700 capitalize">
-                        {c}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-
-
-                <div className="space-y-2">
-                  <p className="text-xs font-bold text-amber-700 uppercase tracking-widest">
-                    Ir para bairro
-                  </p>
-                  <BairroDropdown
-                    nomes={nomesBairros}
-                    selecionado={
-                      (featureSelecionada?.properties?.name as string) ?? null
-                    }
-                    onSelect={handleBairro}
-                  />
-                </div>
-              </motion.div>
+              <p className="font-semibold text-slate-700">Filtros</p>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
 
-      <BairroDestaque feature={featureSelecionada} />
-    </>
+            <motion.div
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.12, duration: 0.22 }}
+              className="p-5 space-y-6"
+            >
+              <div className="space-y-3">
+                <p className="text-xs font-bold text-amber-700 uppercase tracking-widest">
+                  Camadas
+                </p>
+                {(["paradas", "heatmap"] as const).map((c) => (
+                  <label
+                    key={c}
+                    className="flex items-center gap-3 cursor-pointer select-none"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={camadas[c]}
+                      onChange={() => onToggle(c)}
+                      className="w-4 h-4 accent-amber-500"
+                    />
+                    <span className="text-sm text-slate-700 capitalize">
+                      {c}
+                    </span>
+                  </label>
+                ))}
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-xs font-bold text-amber-700 uppercase tracking-widest">
+                  Ir para bairro
+                </p>
+                <BairroDropdown
+                  nomes={nomesBairros}
+                  selecionado={bairroSelecionado}
+                  onSelect={onSelecionarBairro}
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

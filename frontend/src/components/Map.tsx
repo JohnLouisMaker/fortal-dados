@@ -1,5 +1,6 @@
+import { AnimatePresence, motion } from "framer-motion";
 import Papa from "papaparse";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   CircleMarker,
   GeoJSON,
@@ -7,10 +8,10 @@ import {
   TileLayer,
   useMap,
 } from "react-leaflet";
-import { motion, AnimatePresence } from "framer-motion";
+import ChatBot from "./chatBot";
 import type { HeatPoint } from "./HeatMapLayer";
 import HeatmapLayer from "./HeatMapLayer";
-import PainelFiltros from "./painelFiltro";
+import PainelFiltros, { BairroDestaque } from "./painelFiltro";
 
 type BusStop = { busstop_id: string; lat: number; lng: number };
 type HeatRow = { lat: number; lng: number; quantidade_lentidao: number };
@@ -80,8 +81,29 @@ export default function Map() {
     heatmap: true,
   });
 
+  // Estado do bairro selecionado agora vive aqui, no nível mais alto,
+  // para que tanto o dropdown do PainelFiltros quanto o ChatBot possam
+  // disparar o mesmo destaque/flyTo no mapa.
+  const [featureSelecionada, setFeatureSelecionada] =
+    useState<GeoJSON.Feature | null>(null);
+
   const toggleCamada = (c: keyof Camadas) =>
     setCamadas((prev) => ({ ...prev, [c]: !prev[c] }));
+
+  const selecionarBairroPorNome = (nome: string) => {
+    if (!nome) {
+      setFeatureSelecionada(null);
+      return;
+    }
+    const feature =
+      bairros?.features.find((f) => f.properties?.name === nome) ?? null;
+    setFeatureSelecionada(feature);
+  };
+
+  const nomeBairroSelecionado = useMemo(
+    () => (featureSelecionada?.properties?.name as string) ?? null,
+    [featureSelecionada],
+  );
 
   useEffect(() => {
     const carregarBairros = async () => {
@@ -197,12 +219,18 @@ export default function Map() {
 
               {camadas.paradas && <ParadasLayer paradas={paradas} />}
 
+              <BairroDestaque feature={featureSelecionada} />
+
               <PainelFiltros
                 camadas={camadas}
                 onToggle={toggleCamada}
                 bairros={bairros}
+                bairroSelecionado={nomeBairroSelecionado}
+                onSelecionarBairro={selecionarBairroPorNome}
               />
             </MapContainer>
+
+            <ChatBot onBairroDetected={selecionarBairroPorNome} />
           </motion.div>
         )}
       </AnimatePresence>
