@@ -1,4 +1,3 @@
-from app.config.config import settings
 from app.routers import bairros, chatbot, heatmap, paradas, stats
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,8 +25,3 @@ app.include_router(chatbot.router)
 @app.get("/", tags=["health"])
 async def root():
     return {"status": "ok", "projeto": "Fortaleza em Dados"}
-
-
-print(
-    f"API rodando com sucesso! Chave do Groq API Chatbot: {settings.groq_api_chatbot_key}"
-)
