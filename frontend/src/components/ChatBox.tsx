@@ -16,6 +16,7 @@ const API_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
 
 export default function ChatBot({ onBairroDetected }: ChatBotProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [sessionId] = useState(() => crypto.randomUUID());
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: crypto.randomUUID(),
@@ -50,11 +51,11 @@ export default function ChatBot({ onBairroDetected }: ChatBotProps) {
       const res = await fetch(`${API_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userText }),
+        body: JSON.stringify({ message: userText, session_id: sessionId }),
       });
 
       if (!res.ok) throw new Error(`Erro ${res.status}`);
-      
+
       const data: { response: string; bairro_detectado: string | null } =
         await res.json();
 

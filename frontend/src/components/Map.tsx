@@ -8,10 +8,10 @@ import {
   TileLayer,
   useMap,
 } from "react-leaflet";
-import ChatBot from "./chatBot";
+import ChatBot from "./ChatBox";
 import type { HeatPoint } from "./HeatMapLayer";
 import HeatmapLayer from "./HeatMapLayer";
-import PainelFiltros, { BairroDestaque } from "./painelFiltro";
+import PainelFiltros, { BairroDestaque } from "./PainelFiltros";
 
 type BusStop = { busstop_id: string; lat: number; lng: number };
 type HeatRow = { lat: number; lng: number; quantidade_lentidao: number };

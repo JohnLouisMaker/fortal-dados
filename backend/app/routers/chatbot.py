@@ -12,7 +12,7 @@ async def chat(request: Chat):
         raise HTTPException(status_code=400, detail="message is required")
 
     bairro = buscar_bairro(request.message)
-    response = enviar_para_llm(request.message, bairro)
+    response = enviar_para_llm(request.message, bairro, request.session_id)
 
     return {
         "status": "ok",
