@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import L from "leaflet";
 import Papa from "papaparse";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -60,7 +61,7 @@ function ParadasLayer({ paradas }: { paradas: BusStop[] }) {
             color: "#ffffff",
             fillColor: "#f59e0b",
             fillOpacity: 0.9,
-            weight: 2,
+            weight: 1.5,
           }}
         />
       ))}
@@ -165,11 +166,11 @@ export default function Map() {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
-            className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900"
+            className="absolute inset-0 flex flex-col items-center justify-center bg-slate-50"
           >
             <div className="flex flex-col items-center space-y-4">
-              <div className="h-12 w-12 rounded-full border-4 border-amber-400 border-t-transparent animate-spin" />
-              <p className="text-amber-400 font-semibold tracking-wide">
+              <div className="h-12 w-12 rounded-full border-4 border-cyan-500 border-t-transparent animate-spin" />
+              <p className="text-cyan-600 font-semibold tracking-wide">
                 Carregando mapa
               </p>
             </div>
@@ -196,11 +197,17 @@ export default function Map() {
               {bairros && (
                 <GeoJSON
                   data={bairros}
-                  pointToLayer={() => null}
+                  pointToLayer={(_, latlng) =>
+                    L.circleMarker(latlng, {
+                      radius: 0,
+                      opacity: 0,
+                      fillOpacity: 0,
+                    })
+                  }
                   style={{
-                    color: "#ffffff",
-                    weight: 1,
-                    opacity: 0.4,
+                    color: "#94a3b8",
+                    weight: 0.8,
+                    opacity: 0.35,
                     fillOpacity: 0,
                   }}
                 />

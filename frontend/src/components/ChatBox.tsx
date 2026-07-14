@@ -84,7 +84,7 @@ export default function ChatBot({ onBairroDetected }: ChatBotProps) {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-1000 flex flex-col items-end gap-3">
+    <div className="fixed bottom-6 left-6 z-1000 flex flex-col items-start gap-3">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -92,23 +92,24 @@ export default function ChatBot({ onBairroDetected }: ChatBotProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 16 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            style={{ transformOrigin: "bottom right" }}
-            className="flex h-96 w-80 flex-col overflow-hidden rounded-2xl border border-amber-100 bg-white/95 backdrop-blur-xl shadow-2xl"
+            style={{ transformOrigin: "bottom left" }}
+            className="flex h-115 w-87.5 flex-col overflow-hidden rounded-2xl border border-slate-200/60 bg-white/95 backdrop-blur-xl shadow-2xl"
           >
-            <div className="flex items-center justify-between border-b border-amber-100 bg-linear-to-r from-amber-50 to-orange-50 px-4 py-3">
-              <h2 className="text-sm font-semibold text-slate-700">
+            <div className="flex items-center justify-between border-b border-slate-100 bg-linear-to-r from-cyan-50/30 to-blue-50/30 px-4 py-3.5">
+              <h2 className="text-sm font-semibold text-slate-800 flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
                 Fortaleza em Dados AI
               </h2>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-slate-400 hover:text-slate-600 transition-colors rounded-lg p-1 hover:bg-slate-100"
                 aria-label="Fechar chat"
               >
                 <X size={18} />
               </button>
             </div>
 
-            <div className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
+            <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4 scrollbar-thin scrollbar-thumb-slate-200 font-serif">
               <AnimatePresence initial={false}>
                 {messages.map((msg) => (
                   <motion.div
@@ -116,10 +117,10 @@ export default function ChatBot({ onBairroDetected }: ChatBotProps) {
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                    className={`max-w-[85%] rounded-xl px-3 py-2 text-sm ${
+                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm shadow-xs leading-relaxed ${
                       msg.type === "user"
-                        ? "ml-auto bg-amber-500 text-white"
-                        : "bg-slate-100 text-slate-800"
+                        ? "ml-auto bg-cyan-500 text-white rounded-tr-xs"
+                        : "bg-slate-50 text-slate-800 rounded-tl-xs border border-slate-100"
                     }`}
                   >
                     {msg.message}
@@ -131,7 +132,7 @@ export default function ChatBot({ onBairroDetected }: ChatBotProps) {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="flex w-fit items-center gap-1 rounded-xl bg-slate-100 px-3 py-2"
+                  className="flex w-fit items-center gap-1.5 rounded-2xl rounded-tl-xs bg-slate-100/90 px-4 py-2.5 border border-slate-200/40"
                 >
                   {[0, 1, 2].map((i) => (
                     <motion.span
@@ -153,7 +154,7 @@ export default function ChatBot({ onBairroDetected }: ChatBotProps) {
 
             <form
               onSubmit={handleSendMessage}
-              className="flex gap-2 border-t border-amber-100 p-3"
+              className="flex gap-2 border-t border-slate-100 bg-white/50 p-3.5"
             >
               <input
                 type="text"
@@ -161,12 +162,12 @@ export default function ChatBot({ onBairroDetected }: ChatBotProps) {
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Pergunte sobre um bairro..."
                 disabled={isLoading}
-                className="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-800 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100 disabled:opacity-60"
+                className="flex-1 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-serif text-slate-800 transition focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/10 disabled:opacity-60 "
               />
               <button
                 type="submit"
                 disabled={isLoading || !inputMessage.trim()}
-                className="rounded-lg bg-amber-500 px-3 py-1.5 text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl bg-linear-to-r bg-cyan-500 p-2 text-white shadow-md transition hover:brightness-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:scale-100 flex items-center justify-center w-10 h-10"
                 aria-label="Enviar mensagem"
               >
                 <Send size={16} />
@@ -177,8 +178,9 @@ export default function ChatBot({ onBairroDetected }: ChatBotProps) {
       </AnimatePresence>
 
       <motion.button
-        whileTap={{ scale: 0.92 }}
-        className="flex items-center gap-2 rounded-full bg-linear-to-r from-amber-500 to-orange-500 p-3 text-white shadow-lg hover:from-amber-600 hover:to-orange-600"
+        whileHover={{ scale: 1.04 }}
+        whileTap={{ scale: 0.94 }}
+        className="flex h-14 w-14 items-center justify-center rounded-full border bg-cyan-500 text-white transition-all duration-150"
         onClick={() => setIsOpen((v) => !v)}
         aria-label="Abrir chat"
       >
@@ -188,7 +190,7 @@ export default function ChatBot({ onBairroDetected }: ChatBotProps) {
           animate={{ rotate: 0, opacity: 1 }}
           transition={{ duration: 0.2 }}
         >
-          {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
+          {isOpen ? <X size={22} /> : <MessageCircle size={22} />}
         </motion.span>
       </motion.button>
     </div>

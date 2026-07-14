@@ -34,9 +34,9 @@ export function BairroDestaque({
 
     const layer = L.geoJSON(feature, {
       style: {
-        color: "#f59e0b",
-        weight: 3.5,
-        fillColor: "#f59e0b",
+        color: "#06b6d4",
+        weight: 3,
+        fillColor: "#06b6d4",
         fillOpacity: 0,
         opacity: 0,
       },
@@ -56,7 +56,7 @@ export function BairroDestaque({
           (el as SVGElement).style.transition =
             "opacity 0.5s ease, fill-opacity 0.5s ease";
       });
-      layer.setStyle({ opacity: 1, fillOpacity: 0.2 });
+      layer.setStyle({ opacity: 1, fillOpacity: 0.15 });
     });
 
     layerRef.current = layer;
@@ -100,7 +100,7 @@ function BairroDropdown({
         type="button"
         onClick={() => setOpen((v) => !v)}
         whileTap={{ scale: 0.98 }}
-        className="w-full flex items-center justify-between rounded-xl border border-amber-200 bg-white px-4 py-3 text-base text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-400"
+        className="w-full flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
       >
         <span className={selecionado ? "text-slate-800" : "text-slate-400"}>
           {selecionado ?? "Selecione um bairro..."}
@@ -108,7 +108,7 @@ function BairroDropdown({
         <motion.span
           animate={{ rotate: open ? 180 : 0 }}
           transition={{ duration: 0.2 }}
-          className="text-amber-500 text-xs"
+          className="text-cyan-500 text-xs"
         >
           ▼
         </motion.span>
@@ -122,7 +122,7 @@ function BairroDropdown({
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             style={{ transformOrigin: "top" }}
-            className="absolute z-10 mt-2 w-full max-h-64 overflow-y-auto rounded-xl border border-amber-200 bg-white shadow-2xl"
+            className="absolute z-10 mt-2 w-full max-h-64 overflow-y-auto rounded-xl border border-slate-100 bg-white shadow-2xl"
           >
             <motion.button
               type="button"
@@ -130,8 +130,8 @@ function BairroDropdown({
                 onSelect("");
                 setOpen(false);
               }}
-              whileHover={{ backgroundColor: "rgba(254, 243, 199, 0.6)" }}
-              className="w-full text-left px-4 py-2.5 text-base text-slate-400 border-b border-amber-100"
+              whileHover={{ backgroundColor: "rgba(241, 245, 249, 0.8)" }}
+              className="w-full text-left px-4 py-2.5 text-base text-slate-400 border-b border-slate-100"
             >
               Selecione um bairro...
             </motion.button>
@@ -142,14 +142,14 @@ function BairroDropdown({
                 initial={{ opacity: 0, x: -6 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: Math.min(i * 0.015, 0.3), duration: 0.18 }}
-                whileHover={{ backgroundColor: "rgba(254, 243, 199, 0.6)" }}
+                whileHover={{ backgroundColor: "rgba(224, 242, 254, 0.5)" }}
                 onClick={() => {
                   onSelect(nome);
                   setOpen(false);
                 }}
                 className={`w-full text-left px-4 py-2.5 text-base ${
                   nome === selecionado
-                    ? "text-amber-700 font-semibold bg-amber-50"
+                    ? "text-cyan-700 font-semibold bg-cyan-50/50"
                     : "text-slate-700"
                 }`}
               >
@@ -186,15 +186,17 @@ export default function PainelFiltros({
       .sort() ?? [];
 
   return (
-    <div className="absolute top-4 right-4 z-1000 flex flex-col items-end">
+    <div className="absolute top-6 right-6 z-1000 flex flex-col items-end font-fun">
       <motion.button
         onClick={() => setOpen(!open)}
         layout
-        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-        className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 rounded-2xl shadow-lg active:scale-95"
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.96 }}
+        transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
+        className="flex items-center gap-2 rounded-2xl border border-slate-200/80 bg-white/95 px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-[0_10px_25px_rgba(15,23,42,0.12)] backdrop-blur-xl transition-all duration-150"
       >
         <motion.span
-          className="text-lg inline-block"
+          className="text-lg inline-block text-cyan-500"
           animate={{ rotate: open ? 90 : 0 }}
           transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
         >
@@ -212,15 +214,17 @@ export default function PainelFiltros({
             exit={{ opacity: 0, scale: 0.96, y: -12 }}
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
             style={{ transformOrigin: "top right" }}
-            className="mt-3 w-72 rounded-2xl bg-white/95 backdrop-blur-xl shadow-2xl border border-amber-200"
+            className="mt-3 w-72 rounded-2xl bg-white/95 backdrop-blur-xl shadow-2xl border border-slate-200/60"
           >
             <motion.div
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.08, duration: 0.2 }}
-              className="px-4 py-3 bg-linear-to-r from-amber-50 to-orange-50 border-b border-amber-100 rounded-t-2xl"
+              className="px-4 py-3.5 bg-linear-to-r from-cyan-50/30 to-blue-50/30 border-b border-slate-100 rounded-t-2xl"
             >
-              <p className="font-semibold text-slate-700">Filtros</p>
+              <p className="font-semibold text-slate-800 text-sm">
+                Defina a sua filtragem
+              </p>
             </motion.div>
 
             <motion.div
@@ -230,7 +234,7 @@ export default function PainelFiltros({
               className="p-5 space-y-6"
             >
               <div className="space-y-3">
-                <p className="text-xs font-bold text-amber-700 uppercase tracking-widest">
+                <p className="text-xs font-bold text-cyan-600 uppercase tracking-widest">
                   Camadas
                 </p>
                 {(["paradas", "heatmap"] as const).map((c) => (
@@ -242,7 +246,7 @@ export default function PainelFiltros({
                       type="checkbox"
                       checked={camadas[c]}
                       onChange={() => onToggle(c)}
-                      className="w-4 h-4 accent-amber-500"
+                      className="w-4 h-4 accent-cyan-500"
                     />
                     <span className="text-sm text-slate-700 capitalize">
                       {c}
@@ -252,7 +256,7 @@ export default function PainelFiltros({
               </div>
 
               <div className="space-y-2">
-                <p className="text-xs font-bold text-amber-700 uppercase tracking-widest">
+                <p className="text-xs font-bold text-cyan-600 uppercase tracking-widest">
                   Ir para bairro
                 </p>
                 <BairroDropdown
