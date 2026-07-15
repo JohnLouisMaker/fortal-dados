@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 router = APIRouter(prefix="/heatmap", tags=["heatmap"])
 
-DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data"
+DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
 HEATMAP_PATH = DATA_DIR / "03_output" / "result_heatmap.csv"
 COLUMNS_REQUIRED = ["lat", "lng", "quantidade_lentidao"]
 

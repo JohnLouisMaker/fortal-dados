@@ -4,7 +4,7 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException
 
 CURRENT_PATH = Path(__file__).resolve()
-ROOT_PATH = CURRENT_PATH.parent.parent.parent.parent
+ROOT_PATH = CURRENT_PATH.parent.parent.parent
 DATA_DIR = ROOT_PATH / "data"
 GEOJSON_PATH = DATA_DIR / "04_geo" / "fullmapfortaleza.geojson"
 

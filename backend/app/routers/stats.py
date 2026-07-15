@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from shapely.ops import orient
 from shapely.validation import make_valid
 
-DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data"
+DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
 GEO_PATH = DATA_DIR / "04_geo" / "fullmapfortaleza.geojson"
 PARADAS_PATH = DATA_DIR / "01_raw" / "bus_stops.csv"
 HEATMAP_PATH = DATA_DIR / "03_output" / "result_heatmap.csv"

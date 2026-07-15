@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Query
 
-DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data"
+DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
 PARADAS_PATH = DATA_DIR / "01_raw" / "bus_stops.csv"
 
 try:
