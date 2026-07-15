@@ -45,6 +45,12 @@ output/
 results/
 logs/
 
+# --- EXCEÇÕES PARA O FRONTEND (NÃO IGNORAR!) ---
+!frontend/package.json
+!frontend/package-lock.json
+!frontend/tsconfig*.json
+!frontend/vercel.json
+
 # =============== IDEs e Editores ===============
 .vscode/
 .idea/
