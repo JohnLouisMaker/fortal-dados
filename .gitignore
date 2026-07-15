@@ -45,12 +45,17 @@ output/
 results/
 logs/
 
-# --- EXCEÇÕES PARA O FRONTEND (NÃO IGNORAR!) ---
+
 !frontend/package.json
 !frontend/package-lock.json
 !frontend/tsconfig*.json
 !frontend/vercel.json
 
+
+!backend/data/
+!backend/data/01_raw/bus_stops.csv
+!backend/data/03_output/result_heatmap.csv
+!backend/data/04_geo/fullmapfortaleza.geojson
 # =============== IDEs e Editores ===============
 .vscode/
 .idea/
