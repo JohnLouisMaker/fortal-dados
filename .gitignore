@@ -52,10 +52,11 @@ logs/
 !frontend/vercel.json 
 
 
-!data/
-!data/01_raw/bus_stops.csv
-!data/03_output/result_heatmap.csv
-!data/04_geo/fullmapfortaleza.geojson
+# --- EXCEÇÃO PARA OS DADOS DENTRO DO BACKEND ---
+!backend/data/
+!backend/data/01_raw/bus_stops.csv
+!backend/data/03_output/result_heatmap.csv
+!backend/data/04_geo/fullmapfortaleza.geojson
 # =============== IDEs e Editores ===============
 .vscode/
 .idea/
