@@ -15,10 +15,10 @@ import HeatmapLayer from "./HeatMapLayer";
 import PainelFiltros, { BairroDestaque } from "./PainelFiltros";
 
 type BusStop = { busstop_id: string; lat: number; lng: number };
+type HeatRow = { lat: number; lng: number; quantidade_lentidao: number };
 type Camadas = { bairros: boolean; paradas: boolean; heatmap: boolean };
 
 const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY;
-const API_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
 
 const FORTALEZA_BOUNDS = {
   latMin: -3.8886,
@@ -136,31 +136,19 @@ export default function Map() {
 
     const carregarHeatmap = async () => {
       try {
-        const res = await fetch(`${API_URL}/heatmap`);
+        const res = await fetch("/data/result_heatmap.csv");
         if (!res.ok) throw new Error("Erro ao carregar heatmap");
-        const payload = await res.json();
-
-        // Garante que temos um array vindo da chave 'data' para iterar
-        const responseData = Array.isArray(payload.data) ? payload.data : [];
-
-        // Mapeia e higieniza os dados para garantir que são números válidos
-        const points: HeatPoint[] = responseData
-          .filter((r) => Array.isArray(r) && r.length >= 2)
-          .map((r) => {
-            const lat = Number(r[0]);
-            const lng = Number(r[1]);
-            const intensidade = r[2] !== undefined ? Number(r[2]) : 1;
-
-            return [lat, lng, intensidade] as HeatPoint;
-          })
-          .filter((p) => !isNaN(p[0]) && !isNaN(p[1]));
-
-        console.log(
-          `[Heatmap] Carregado com sucesso! Total de pontos válidos: ${points.length}`,
-        );
+        const { data } = Papa.parse<HeatRow>(await res.text(), {
+          header: true,
+          dynamicTyping: true,
+          skipEmptyLines: true,
+        });
+        const points: HeatPoint[] = data
+          .filter((r) => dentroDeFortaleza(r.lat, r.lng))
+          .map((r) => [r.lat, r.lng, r.quantidade_lentidao]);
         setHeatPoints(points);
       } catch (e) {
-        console.error("Erro ao processar dados do heatmap:", e);
+        console.error(e);
       }
     };
 
