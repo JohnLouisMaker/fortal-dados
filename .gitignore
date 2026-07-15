@@ -49,7 +49,7 @@ logs/
 !frontend/package.json
 !frontend/package-lock.json
 !frontend/tsconfig*.json
-!frontend/vercel.json
+!frontend/vercel.json 
 
 
 !data/
