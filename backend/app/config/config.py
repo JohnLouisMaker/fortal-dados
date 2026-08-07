@@ -9,7 +9,7 @@ class Settings(BaseSettings):
         "http://127.0.0.1:5173",
         "http://127.0.0.1:8000",
         "https://fortal-dados.vercel.app",
-        "https://fortal-dados-production.up.railway.app",
+        "https://fortal-dados.onrender.com",
     ]
 
     model_config = SettingsConfigDict(
