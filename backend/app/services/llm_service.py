@@ -1,7 +1,7 @@
 from app.config.config import settings
 from groq import Groq
 
-client = Groq(api_key=settings.groq_api_chatbot_key)
+client = Groq(api_key=settings.GROQ_API_CHATBOT_KEY)
 HISTORY_CHAT = {}
 
 
