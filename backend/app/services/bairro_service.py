@@ -1,4 +1,30 @@
+import re
+
 from rapidfuzz import fuzz, process
+
+# Expressões de conversação cotidiana que NÃO devem ser interpretadas como entidades geográficas
+EXPRESSOES_SOCIAIS = {
+    # Saudações
+    "bom dia", "boa tarde", "boa noite", "olá", "oi", "oie", "ooi",
+    # Agradecimentos
+    "obrigado", "obrigada", "valeu", "brigado", "brigada", "muito obrigado", "muito obrigada",
+    # Despedidas
+    "até logo", "tchau", "adeus", "até mais", "falou", "flw",
+    # Afirmações/negações simples
+    "sim", "não", "nao", "ok", "okay", "blz", "beleza",
+    # Conversação
+    "tudo bem", "tudo bom", "como vai", "que isso", "nada",
+    "entendi", "entendo", "certo", "perfeito", "maravilha", "legal",
+}
+
+
+def _is_expressao_social(texto: str) -> bool:
+    """Retorna True se o texto for apenas uma expressão social (saudação, agradecimento, etc.)."""
+    texto = texto.lower().strip()
+    # Remove pontuação para comparar
+    texto_limpo = re.sub(r"[^\w\s]", "", texto).strip()
+    return texto_limpo in EXPRESSOES_SOCIAIS
+
 
 BAIRROS_OFICIAIS = [
     "Aerolândia",
@@ -128,6 +154,12 @@ BAIRROS_OFICIAIS = [
 def buscar_bairro(request: str) -> str | None:
     if not request:
         return None
+
+    # Se a mensagem for apenas uma expressão social (saudação, agradecimento, etc.),
+    # não deve ser interpretada como entidade geográfica
+    if _is_expressao_social(request):
+        return None
+
     result = process.extractOne(request, BAIRROS_OFICIAIS, scorer=fuzz.WRatio)
 
     if result:

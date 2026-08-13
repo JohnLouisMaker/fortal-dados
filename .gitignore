@@ -60,6 +60,7 @@ logs/
 !backend/data/03_output/result_heatmap.csv
 !backend/data/04_geo/fullmapfortaleza.geojson
 
+/skills-lock.json
 # =============== IDEs e Editores ===============
 .vscode/
 .idea/
@@ -80,3 +81,5 @@ Thumbs.db
 *.pickle
 *.joblib
 __MACOSX/
+/.agents/
+/docs/agents/

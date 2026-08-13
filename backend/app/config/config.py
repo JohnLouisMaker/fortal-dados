@@ -1,4 +1,3 @@
-from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -12,14 +11,6 @@ class Settings(BaseSettings):
         "https://fortal-dados.vercel.app",
         "https://fortal-dados.onrender.com",
     ]
-
-    @field_validator("CORS_ORIGINS", mode="before")
-    @classmethod
-    def assemble_cors_origins(cls, v: str | list[str]) -> list[str]:
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",") if i.strip()]
-        return v
-
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
