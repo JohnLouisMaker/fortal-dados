@@ -5,9 +5,7 @@ client = Groq(api_key=settings.GROQ_API_CHATBOT_KEY)
 HISTORY_CHAT = {}
 
 
-def enviar_para_llm(
-    request: str, neighborhood: str = None, session_id: str = ""
-) -> str:
+def enviar_para_llm(request: str, neighborhood: str = None, session_id: str = "") -> str:
 
     system_prompt = (
         "Você é um assistente virtual especialista em transporte público de Fortaleza (ETUFOR). "
@@ -23,7 +21,7 @@ def enviar_para_llm(
     HISTORY_CHAT[session_id].append({"role": "user", "content": request})
 
     response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+        model="openai/gpt-oss-20b",
         messages=HISTORY_CHAT[session_id],
     )
 
