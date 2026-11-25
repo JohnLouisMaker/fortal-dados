@@ -26,3 +26,8 @@ app.include_router(chatbot.router)
 @app.get("/", tags=["health"])
 async def root():
     return {"status": "ok", "projeto": "Fortaleza em Dados"}
+
+
+@app.get("/health", tags=["health"])
+async def health() -> dict[str, str]:
+    return {"status": "ok"}
